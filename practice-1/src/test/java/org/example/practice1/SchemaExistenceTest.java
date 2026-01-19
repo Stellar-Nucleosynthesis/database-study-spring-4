@@ -4,7 +4,6 @@ import org.example.practice1.utils.AbstractTestContainersTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -12,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Sql(scripts = {"/db/schema.sql", "/db/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Import(AbstractTestContainersTest.class)
 class SchemaExistenceTest extends AbstractTestContainersTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
