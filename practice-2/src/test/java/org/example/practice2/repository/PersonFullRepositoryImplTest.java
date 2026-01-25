@@ -64,14 +64,8 @@ class PersonFullRepositoryImplTest {
 
     @Test
     void remove_shouldDeleteEntity() {
-        PersonFull p = new PersonFull();
-        p.setFirstName("ToRemove");
-        p.setLastName("User");
-        p.setFullName("ToRemove User");
-        repository.persist(p);
-        em.flush();
-        Long id = p.getId();
-        assertNotNull(id);
+        Long id = 1L;
+        PersonFull p = repository.find(id);
 
         repository.remove(p);
         em.flush();
@@ -83,15 +77,9 @@ class PersonFullRepositoryImplTest {
 
     @Test
     void detach_shouldPreventAutomaticSync() {
-        PersonFull p = new PersonFull();
-        p.setFirstName("BeforeDetach");
-        p.setLastName("User");
-        p.setFullName("BeforeDetach User");
-        repository.persist(p);
-        em.flush();
-        Long id = p.getId();
-        assertNotNull(id);
-
+        Long id = 1L;
+        PersonFull p = repository.find(id);
+        String beforeDetach = p.getFirstName();
         repository.detach(p);
 
         p.setFirstName("AfterDetachedChange");
@@ -100,7 +88,7 @@ class PersonFullRepositoryImplTest {
 
         PersonFull fromDb = repository.find(id);
         assertNotNull(fromDb);
-        assertEquals("BeforeDetach", fromDb.getFirstName());
+        assertEquals(beforeDetach, fromDb.getFirstName());
     }
 
     @Test
