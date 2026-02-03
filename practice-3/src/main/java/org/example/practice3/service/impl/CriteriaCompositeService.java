@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CompositeServiceCriteria implements ProductService, CategoryService {
+public class CriteriaCompositeService implements ProductService, CategoryService {
     private final EntityManager em;
 
     @Override
@@ -24,7 +24,7 @@ public class CompositeServiceCriteria implements ProductService, CategoryService
         CriteriaQuery<Category> cq = cb.createQuery(Category.class);
 
         Root<Category> category = cq.from(Category.class);
-        Join<Category, Product> products = category.join("product");
+        Join<Category, Product> products = category.join("products");
 
         cq.select(category)
                 .groupBy(category.get("id"))
@@ -97,7 +97,7 @@ public class CompositeServiceCriteria implements ProductService, CategoryService
     }
 
     @Override
-    public int countProductsByCategoryId(Long id) {
+    public long countProductsByCategoryId(Long id) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 

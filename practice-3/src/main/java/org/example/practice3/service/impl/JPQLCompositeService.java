@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CompositeServiceJPQL implements ProductService, CategoryService {
+public class JPQLCompositeService implements ProductService, CategoryService {
     private final EntityManager em;
 
     @Override
@@ -69,7 +69,7 @@ public class CompositeServiceJPQL implements ProductService, CategoryService {
     }
 
     @Override
-    public int countProductsByCategoryId(Long id) {
+    public long countProductsByCategoryId(Long id) {
         Long result = em.createQuery(
                         "SELECT COUNT(p) FROM Product p WHERE p.category.id = :id",
                         Long.class)

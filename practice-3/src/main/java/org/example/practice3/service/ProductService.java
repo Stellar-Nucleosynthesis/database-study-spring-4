@@ -10,5 +10,5 @@ public interface ProductService {
     void updateProductNameById(Long id, String name);
     void deleteProductsByPriceGreaterThan(BigDecimal price);
     List<Product> findProductsByCategoryNameAndPriceGreaterThan(String name, BigDecimal price);
-    int countProductsByCategoryId(Long id);
+    long countProductsByCategoryId(Long id);
 }

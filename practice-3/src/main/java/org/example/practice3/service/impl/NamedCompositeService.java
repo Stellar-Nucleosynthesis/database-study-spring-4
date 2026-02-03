@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CompositeServiceNamed implements ProductService, CategoryService {
+public class NamedCompositeService implements ProductService, CategoryService {
     private final EntityManager em;
 
     @Override
@@ -54,8 +54,8 @@ public class CompositeServiceNamed implements ProductService, CategoryService {
     }
 
     @Override
-    public int countProductsByCategoryId(Long id) {
-        return em.createNamedQuery("Product.countByCategoryId", Integer.class)
+    public long countProductsByCategoryId(Long id) {
+        return em.createNamedQuery("Product.countByCategoryId", Long.class)
                 .setParameter("id", id)
                 .getSingleResult();
     }
