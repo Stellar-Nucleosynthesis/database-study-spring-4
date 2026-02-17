@@ -16,14 +16,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User add(User user, DataSourceEnum source) {
-        dataSourceContextHolder.setBranchContext(source);
+    public User add(User user) {
+        dataSourceContextHolder.setBranchContext(DataSourceEnum.PRIMARY);
         return userRepository.save(user);
     }
 
     @Override
-    public Optional<User> findById(Integer id, DataSourceEnum source) {
-        dataSourceContextHolder.setBranchContext(source);
+    public Optional<User> findById(Integer id) {
+        dataSourceContextHolder.setBranchContext(DataSourceEnum.REPLICA);
         return userRepository.findById(id);
     }
 }
