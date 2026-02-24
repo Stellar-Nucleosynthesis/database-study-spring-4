@@ -2,33 +2,31 @@ package org.example.practice5;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
 public abstract class AbstractPostgresTest {
 
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:16-alpine")
-                    .withDatabaseName("testdb")
-                    .withUsername("test")
-                    .withPassword("test")
-                    .withReuse(true);
+    private static final String PRIMARY_URL  = "jdbc:postgresql://localhost:5432/testdb";
+    private static final String REPLICA_URL  = "jdbc:postgresql://localhost:5433/testdb";
+
+    private static final String USERNAME = "postgres";
+    private static final String PRIMARY_PASSWORD = "masterpass";
 
     @DynamicPropertySource
-    static void overrideDataSourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.primary.url",          POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.primary.username",     POSTGRES::getUsername);
-        registry.add("spring.datasource.primary.password",     POSTGRES::getPassword);
-        registry.add("spring.datasource.primary.driver-class-name",
-                () -> "org.postgresql.Driver");
+    static void registerDataSourceProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.primary.url", () -> PRIMARY_URL);
+        registry.add("spring.datasource.primary.username", () -> USERNAME);
+        registry.add("spring.datasource.primary.password", () -> PRIMARY_PASSWORD);
+        registry.add(
+                "spring.datasource.primary.driver-class-name",
+                () -> "org.postgresql.Driver"
+        );
 
-        registry.add("spring.datasource.replica.url",          POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.replica.username",     POSTGRES::getUsername);
-        registry.add("spring.datasource.replica.password",     POSTGRES::getPassword);
-        registry.add("spring.datasource.replica.driver-class-name",
-                () -> "org.postgresql.Driver");
+        registry.add("spring.datasource.replica.url", () -> REPLICA_URL);
+        registry.add("spring.datasource.replica.username", () -> USERNAME);
+        registry.add("spring.datasource.replica.password", () -> PRIMARY_PASSWORD);
+        registry.add(
+                "spring.datasource.replica.driver-class-name",
+                () -> "org.postgresql.Driver"
+        );
     }
 }
