@@ -1,21 +1,24 @@
 package org.example.practice5;
 
-import org.example.practice5.entities.User;
-import org.example.practice5.service.UserService;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
-import java.util.Optional;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
-class ClusterReplicationTest extends AbstractPostgresTest{
+class HikariPoolExhaustionTest extends AbstractPostgresTest {
+
     @Autowired
-    private UserService userService;
+    private DataSource dataSource;
 
     @DynamicPropertySource
     static void registerHikariProps(DynamicPropertyRegistry registry) {
@@ -27,13 +30,17 @@ class ClusterReplicationTest extends AbstractPostgresTest{
     }
 
     @Test
-    void writeOnPrimary_readOnReplica_shouldBeSynchronized() {
-        User user = new User();
-        user.setName("replication-test");
-        User saved = userService.add(user);
-        Integer id = saved.getId();
+    void whenPoolIsExhausted_thenNewRequestFails() throws Exception {
+        HikariDataSource hikari = dataSource.unwrap(HikariDataSource.class);
+        Connection c1 = hikari.getConnection();
 
-        Optional<User> fromReplica = userService.findById(id);
-        assertThat(fromReplica).isPresent();
+        long start = System.currentTimeMillis();
+        assertThatThrownBy(hikari::getConnection)
+                .isInstanceOf(SQLException.class)
+                .hasMessageContaining("Connection is not available");
+        long duration = System.currentTimeMillis() - start;
+
+        assertThat(duration).isGreaterThanOrEqualTo(1000);
+        c1.close();
     }
 }

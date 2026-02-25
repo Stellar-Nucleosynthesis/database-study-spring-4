@@ -1,7 +1,7 @@
 package org.example.practice5.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.example.practice5.util.DataSourceEnum;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
 
@@ -36,20 +36,26 @@ public class DataSourceRouting extends AbstractRoutingDataSource {
     }
 
     public DataSource primaryDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(primaryDataSourceConfig.getDriverClassName());
-        dataSource.setUrl(primaryDataSourceConfig.getUrl());
-        dataSource.setUsername(primaryDataSourceConfig.getUsername());
-        dataSource.setPassword(primaryDataSourceConfig.getPassword());
-        return dataSource;
+        HikariDataSource ds = new HikariDataSource();
+        ds.setDriverClassName(primaryDataSourceConfig.getDriverClassName());
+        ds.setJdbcUrl(primaryDataSourceConfig.getUrl());
+        ds.setUsername(primaryDataSourceConfig.getUsername());
+        ds.setPassword(primaryDataSourceConfig.getPassword());
+
+        ds.setMaximumPoolSize(primaryDataSourceConfig.getMaximumPoolSize());
+        ds.setConnectionTimeout(primaryDataSourceConfig.getConnectionTimeout());
+        return ds;
     }
 
     public DataSource replicaDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(replicaDataSourceConfig.getDriverClassName());
-        dataSource.setUrl(replicaDataSourceConfig.getUrl());
-        dataSource.setUsername(replicaDataSourceConfig.getUsername());
-        dataSource.setPassword(replicaDataSourceConfig.getPassword());
-        return dataSource;
+        HikariDataSource ds = new HikariDataSource();
+        ds.setDriverClassName(replicaDataSourceConfig.getDriverClassName());
+        ds.setJdbcUrl(replicaDataSourceConfig.getUrl());
+        ds.setUsername(replicaDataSourceConfig.getUsername());
+        ds.setPassword(replicaDataSourceConfig.getPassword());
+
+        ds.setMaximumPoolSize(replicaDataSourceConfig.getMaximumPoolSize());
+        ds.setConnectionTimeout(replicaDataSourceConfig.getConnectionTimeout());
+        return ds;
     }
 }

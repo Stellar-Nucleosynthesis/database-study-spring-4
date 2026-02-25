@@ -10,6 +10,7 @@ services:
       - POSTGRESQL_REPLICATION_MODE=master
       - POSTGRESQL_REPLICATION_USER=repl_user
       - POSTGRESQL_REPLICATION_PASSWORD=repl_pass
+      - POSTGRESQL_MAX_CONNECTIONS=5
     volumes:
       - master_data:/bitnami/postgresql
     healthcheck:
@@ -30,6 +31,7 @@ services:
       - POSTGRESQL_MASTER_PORT_NUMBER=5432
       - POSTGRESQL_REPLICATION_USER=repl_user
       - POSTGRESQL_REPLICATION_PASSWORD=repl_pass
+      - POSTGRESQL_MAX_CONNECTIONS=5
     depends_on:
       - postgres-master
     volumes:
