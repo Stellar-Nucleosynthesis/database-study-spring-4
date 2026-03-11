@@ -1,0 +1,82 @@
+services:
+  redis-master:
+    image: redis:7
+    container_name: redis-master
+    hostname: redis-master
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-net
+
+  redis-replica:
+    image: redis:7
+    container_name: redis-replica
+    hostname: redis-replica
+    command: redis-server --port 6380 --replicaof redis-master 6379
+    ports:
+      - "6380:6380"
+    depends_on:
+      - redis-master
+    networks:
+      - redis-net
+
+  sentinel1:
+    build:
+      context: ./sentinel
+      dockerfile: Dockerfile
+    container_name: sentinel1
+    environment:
+      - SENTINEL_QUORUM=2
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=10000
+      - SENTINEL_ANNOUNCE_IP=host.docker.internal
+      - SENTINEL_ANNOUNCE_PORT=26379
+    ports:
+      - "26379:26379"
+    depends_on:
+      - redis-master
+      - redis-replica
+    networks:
+      - redis-net
+
+  sentinel2:
+    build:
+      context: ./sentinel
+      dockerfile: Dockerfile
+    container_name: sentinel2
+    environment:
+      - SENTINEL_QUORUM=2
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=10000
+      - SENTINEL_ANNOUNCE_IP=host.docker.internal
+      - SENTINEL_ANNOUNCE_PORT=26380
+    ports:
+      - "26380:26379"
+    depends_on:
+      - redis-master
+      - redis-replica
+    networks:
+      - redis-net
+
+  sentinel3:
+    build:
+      context: ./sentinel
+      dockerfile: Dockerfile
+    container_name: sentinel3
+    environment:
+      - SENTINEL_QUORUM=2
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=10000
+      - SENTINEL_ANNOUNCE_IP=host.docker.internal
+      - SENTINEL_ANNOUNCE_PORT=26381
+    ports:
+      - "26381:26379"
+    depends_on:
+      - redis-master
+      - redis-replica
+    networks:
+      - redis-net
+
+networks:
+  redis-net:
+    driver: bridge
